@@ -8,43 +8,52 @@
 # '{0:07b}'.format(72)
 # Гамма шифра 0100110 1000001 1001000
 
+# функция подсчета количества единиц в бинарном коде каждого из символов
+
 def count_one_in_char(string):
     i=0
     answer = []
     for s in string:
-        for c in '{0:07b}'.format(ord(s)):
+        for c in '{0:07b}'.format(ord(s)): # перевод в бинарный 7-разрядный код / перебор и проверка на условие
             if c=="1":
                 i+=1
         answer.append(i)
         i=0
     return answer
 
-# T( i+1) = ( A * T( i ) + C ) mod M
+# подсчет гаммы-шифра
+# функция принимает на вход одномерный массив с количеством единиц в каждом из символов
+# T( i+1) = ( A * count_one + C ) mod M
+
 def calculate_gamma(total):
     gamma = []
     for a in total:
-        gamma.append('{0:07b}'.format((5 * a + 3) % 128))
+        gamma.append('{0:07b}'.format((5 * a + 3) % 128)) # к одномерному массиву побавляется очередной 7 разрядный код символа гамма-шифра
     return gamma
 
 
-def crypt(string, gamma):
+# ф-ция кодирования входной строки (строка / гамма-шифра)
+
+def crypt(string, gamma):  #на вход поступает гамма-шифр и строка в виде одномерного массива
     answer = ""
     string1=""
     gamma1=""
-    for s, g in zip(string, gamma):
+    for s, g in zip(string, gamma): # в цикле преобразуем элементы массива в строку
         string1 +='{0:07b}'.format(ord(s))
         gamma1 += g
-    for s, g in zip(string1, gamma1):
+    for s, g in zip(string1, gamma1):# поэлементно ксорим 2 строки
         answer += str(int(s) ^ int(g))
     return answer
+
+# ф-ция декодирования (закодированная бинарная строка / бинарный код гамма шифра(str) )
 
 def decrypt(string, gamma):
     answer = ""
     ans = []
     ans2 = ""
-    for s, g in zip(string, gamma):
+    for s, g in zip(string, gamma): # воссоздаем бинарную строку исходного текста
         answer += str(int(s) ^ int(g))
-    n = 7
+    n = 7 # разбиваем строку на блоки по 7 бит / преобразуем двоичныый код в символы
     ans = [answer[i:i + n] for i in range(0, len(answer), n)]
     for s in ans:
         ans2 += chr(int(s, 2))
